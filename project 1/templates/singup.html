@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+
+{% block main_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="info">
+                <h1> <strong>Welcome to Book Review   </strong>     </h1>
+                <p style="font-size: larger;">
+                    Salam, You can seach our database over 5,000, books, read
+                    reviews by readers like you, and add your own reviews
+                    to get started <a href="{{ url_for('singup') }}">singup</a> know or <a href="{{ url_for('login') }}">login</a>.
+                </p>
+                <div class="img">
+                    <center>
+                        <img src="{{ url_for('static',filename='img/books_50px.png') }}" alt="" srcset="" width="200px" height="200px">
+                    </center>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <br>
+            <div class="card">
+                <div class="card-header bg-info">Singup</div>
+                <div class="card-body">
+                    {{ message }}
+                    <form action="{{ url_for('singup') }}" method="post">
+                        <div class="form-group">
+                            <input type="text" name="fname" class="form-control " placeholder="Fullname">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" name="email" class="form-control " placeholder="Email">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="uname" class="form-control " placeholder="Username">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="pwd"  class="form-control " placeholder="Password">
+                        </div>
+ 
+                </div>
+                <div class="card-footer">
+                    <div class="form-group">
+                        <input type="submit" name="btnSubmit" class="btn btn-info btn-block" >
+                    </div>
+                </form>
+                </div>
+            </div>
+    </div>
+</div>
+{% endblock %}
