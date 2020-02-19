@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block main_content %}
+<style>
+    .book-con{
+        padding: 1% 1%;
+        background-color:white;
+        border-radius:20px;
+    }
+    .book-con:hover{
+        padding: 1% 1%;
+        background-color:white;
+        border-radius:20px;
+        -webkit-box-shadow: 4px 3px 24px 5px rgba(0,0,0,0.4);
+        box-shadow: 4px 3px 24px 5px rgba(0,0,0,0.4);
+    }
+ </style>
+    <div class="container">
+        <br>
+        <form action="{{ url_for('index') }}" method="post">
+            <div class="form-group col-md-12">
+                <div class="input-group col-md-12">
+                    <input type="text" name="search" required class="form-control" placeholder="Search by ISBN, name, Author..">
+                    <span class="input-group-btn">
+                        <button name = "btnSearch" type="submit" class="btn btn-primary form-control" type="button">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"> </span>
+                            Search
+                        </button>
+                    </span>
+            </div>
+            </div>
+        </form>
+        <div class="row">
+            <br>
+            <h2 class="text-light"> {{ message }} </h2>
+            {% for book in books %}
+            <div class="form-group col-md-4">
+                <div class="book-con">
+                    <h3 class="text-center text-dark">  <a href="{{ url_for('review', bisbn=book.isbn, bookid=book.id) }}" style="text-decoration:none">{{ book.title }}</a> </h3>
+                    <p class="text-center" >- {{ book.author }}</p>
+                </div>
+            </div>
+           {% endfor %} 
+            <br><br>
+        </div>
+    </div>
+{% endblock %}

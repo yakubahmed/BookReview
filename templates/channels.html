@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% block messagebody %}
+
+{% endblock %}
+
+
+<script>
+
+    if (localStorage.getItem('last_channel')) {
+        // Redirect to last channel
+        let channel = localStorage.getItem('last_channel');    
+        window.location.replace('/channels/' + channel);   
+    }
+
+</script>
