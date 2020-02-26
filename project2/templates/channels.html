@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flack chatt app</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+  <script src="{{ url_for('static', filename='js/channels.js') }}"></script>
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/index.css') }}">
+  <style>
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #333;
+    }
+    body{
+      margin: 0;
+      padding:0;
+    }
+    
+    li {
+      float: left;
+      margin:0;
+
+    }
+    
+    li a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+    }
+    
+    li a:hover:not(.active) {
+      background-color: #111;
+      text-decoration: none;
+
+    }
+    
+    .active {
+      background-color: #4CAF50;
+    }
+    </style>
+</head>
+<body>
+
+  <ul>
+    <li><a href="#home"> <strong>Flack Chat App</strong></a></li>
+    <li style="float:right"><a class="active" href=""> logout </a></li>
+    <li style="float:right"><a class="" href=""> <div id="dname"> {{ name }}</div> </a></li>
+    
+  </ul>
+
+
+<section>
+  <nav>
+    <div class="container">
+      <div class="card border-primary shadow">
+        <div class="card-header bg-primary">Channels</div>
+        <div class="card-body">
+          <table class="hoverTable" id="hoverTable">
+          </table>
+        </div>
+      </div>
+      <br>
+
+
+        <div class="card border-success shadow">
+          <div class="card-header bg-success ">
+              Create new channel
+          </div>
+          <div class="card-body">
+
+              <form id="new_channel" >
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" placeholder="New channel" aria-label="new channel" aria-describedby="basic-addon2" id="channel_name" type="text" name="new_channel" autocomplete="off" autofocus  >
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-primary" type="submit" id="submit">Submit</button>
+                  </div>
+                </div>
+            
+              </form>
+          </div>
+        </div>
+
+        <br>
+        <div class="card shadow border-info ">
+          <div class="card-header bg-info">Direct Messages</div>
+          <div class="card-body">
+            <table class="hoverTable" id="user_list">
+            </table>
+            <hr>
+            <button id="logout_button" type="submit" class="btn btn-danger">Log Out</button>
+          </div>
+        </div>
+        <br>
+      
+    
+    </div>
+  </nav>
+
+  <article>
+      <h4 id="message_header">Messages</h4>
+      <hr>
+      <table class="hoverTable" id="message_list">
+    </table>
+      <h4>Enter new message</h4>
+      <form id="new_message">
+        <textarea class="newchn_msg form-control" id="message_text" placeholder="Enter message here" wrap="soft">
+        </textarea>
+        <input type="hidden" value= {{ name }} id="displayname">
+        <br>
+        <input id="msg_submit" type="submit" class="btn btn-primary" value="Send message">
+      </form>
+    </article>
+
+</section>
+
+
+
+</body>
+</html>
+
+
+
