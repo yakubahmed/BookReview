@@ -1,0 +1,17 @@
+table, th, td {
+    border: 1px solid black;
+}
+
+/* h2 {
+    color: blue;
+} */
+
+/* body {
+    font-family: sans-serif;
+} */
+button {
+    margin:auto;
+    display:block;
+}
+
+

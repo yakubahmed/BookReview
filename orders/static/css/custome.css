@@ -1,0 +1,77 @@
+*{
+    padding:0;
+    margin:0;
+}
+.sidebar{
+
+    width:100%;
+    height: 86vh;
+    background-color: darkblue;
+    float:left;
+}
+.container-fluid{
+    margin:0;
+    padding:0;
+}
+li{
+    list-style: none;
+}
+ul{
+    list-style: none;
+}
+.sidebar {
+float: left;
+width: 20%;
+height: 89vh;
+overflow-y: scroll;
+margin:0;
+background-color:aliceblue;
+padding: 10px;
+border-style: solid none none none;
+border-color: #9cc105;
+}
+.main-container{
+width:100%;
+height:89vh;
+padding: 2% 2%;
+}
+.project-tab {
+    padding: 10%;
+    margin-top: -8%;
+}
+.project-tab #tabs{
+    background: #007b5e;
+    color: #eee;
+}
+.project-tab #tabs h6.section-title{
+    color: #eee;
+}
+.project-tab #tabs .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: #0062cc;
+    background-color: transparent;
+    border-color: transparent transparent #f3f3f3;
+    border-bottom: 3px solid !important;
+    font-size: 16px;
+    font-weight: bold;
+}
+.project-tab .nav-link {
+    border: 1px solid transparent;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+    color: #0062cc;
+    font-size: 16px;
+    font-weight: 600;
+}
+.project-tab .nav-link:hover {
+    border: none;
+}
+.project-tab thead{
+    background: #f3f3f3;
+    color: #333;
+}
+.project-tab a{
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+}
+
