@@ -1,0 +1,194 @@
+{% extends "orders/base.html" %}
+
+
+{% block body %}
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+
+<section id="tabs" class="project-tab ">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <nav>
+                            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                <a class="nav-item nav-link active" id="nav-salad-tab" data-toggle="tab" href="#nav-salad" role="tab" aria-controls="nav-home" aria-selected="true">Salad</a>
+                                <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#sub" role="tab" aria-controls="nav-profile" aria-selected="false">Sub</a>
+                                <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Pizza</a>
+                            </div>
+                        </nav>
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="nav-salad" role="tabpanel" aria-labelledby="nav-salad-tab">
+                                <div class="row">
+                                    {% for salad in salads %}
+                                    <div class="col-md-4">
+                                        <div class="card bg-info my-3 " style="border:2px solid darkblue">
+                                            <div class="card-body" style="color:whitesmoke;">
+                                                <h3>{{ salad.description }}</h3>
+                                                <h5>$<strong>{{ salad.price }}</strong></h5>
+                                                <hr>
+                                                <a href="#" data-name="{{ salad.description }}" data-price="{{ salad.price }}" class="add-to-cart btn btn-info" onclick="sendToCart(this)">Add to cart</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="sub" role="tabpanel" aria-labelledby="nav-profile-tab">
+                                <div class="row">
+                                    {% for sub in subs %}
+                                    <div class="col-md-4">
+                                        <div class="card bg-success my-3 " style="border:2px solid darkgreen">
+                                            <div class="card-body" style="color:whitesmoke;">
+                                                <h3>{{ sub.description }}</h3>
+                                                <h5>$<strong>{{ sub.price }}</strong></h5>
+                                                <hr>
+                                                <a href="#" data-name="{{ sub.description }}" data-price="{{ sub.price }}" class="add-to-cart btn btn-success" onclick="sendToCart(this)">Add to cart</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                                <div class="row">
+                                    {% for pizza in pizzas %}
+                                    <div class="col-md-4">
+                                        <div class="card bg-dark my-3 " style="border:2px solid darkblue">
+                                            <div class="card-body" style="color:whitesmoke;">
+                                                <h3>{{ pizza.description }}</h3>
+                                                <h5>$<strong>{{ pizza.price }}</strong></h5>
+                                                <hr>
+                                                <a href="#" data-name="{{ pizza.description }}" data-price="{{ pizza.price }}" class="add-to-cart btn btn-light" onclick="sendToCart(this)">Add to cart</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+
+  
+                    </div>
+                </div>
+            </div>
+        </section>
+<div class="container">
+    <div class="row">
+
+        <!--End Pizza Menu-->
+
+        <div class="shopping-cart col-lg-4">
+
+            <!-- Modal Check out-->
+            <div class="modal fade" id="cart" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Place order</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to order?
+                    <table class="show-cart table">
+          
+                    </table>
+                    <div>Total price: $<span id="shopping-cart-total-modal">0</span></div> 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <a href="{% url 'payment' %}" class="btn btn-primary">Confirm order</a> <!--onclick="fillCheckOutCart()"-->
+                    
+                </div>
+                </div>
+            </div>
+            </div>
+        
+        </div>
+        
+
+    </div>
+
+</div>
+
+<!-- Modal Sub extra's-->
+<div class="modal fade" id="modal-extra" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Cart</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <form>
+        <div class="modal-body">
+            Which extra would you like with your sub?
+                <select onchange="addExtra(this)">
+                    <option value="No Extras">No Extra (€0.00)</option>
+                    {% for extra in subextra %}
+                    <option value="{{ extra.description }}">{{ extra.description }} (€{{ extra.price }})</option>
+                    {% endfor %} 
+                </select>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Leave</button>
+            <a href="" class="add-to-cart btn btn-primary" onclick="sendToCartSub()" data-dismiss="modal">Add to cart</a></td>
+        </div>
+    </form>
+    </div>
+</div>
+</div>
+<br><br>
+<!-- Modal Pizza's-->
+<div class="modal fade" id="modal-pizza" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Cart</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <form>
+        <div class="modal-body" id="pizza-modal">
+            <p id="pizza_question"></p>
+                <br>
+                <select class="select-pizza-topping" id="select-pizza-topping-1" disabled>
+                    <option value="No Topping">No Topping</option>
+                    {% for topping in toppings %}
+                    <option value="{{ topping.description }}">{{ topping.description }}</option>
+                    {% endfor %} 
+                </select>
+                <br>
+                <select id="select-pizza-topping-2" id="select-pizza-topping-2" disabled>
+                    <option value="No Topping">No Topping</option>
+                    {% for topping in toppings %}
+                    <option value="{{ topping.description }}">{{ topping.description }}</option>
+                    {% endfor %} 
+                </select>
+                <br>
+                <select id="select-pizza-topping-3" id="select-pizza-topping-3" disabled>
+                    <option value="No Topping">No Topping</option>
+                    {% for topping in toppings %}
+                    <option value="{{ topping.description }}">{{ topping.description }}</option>
+                    {% endfor %} 
+                </select>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Leave</button>
+            <a href="" class="add-to-cart btn btn-primary" onclick="sendToCartPizza()" data-dismiss="modal">Add to cart</a></td>
+        </div>
+    </form>
+    </div>
+</div>
+</div>
+
+
+{% endblock %}

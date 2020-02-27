@@ -1,0 +1,18 @@
+
+{% extends 'orders/base.html' %}
+
+
+{% block body %}
+  <div class="card shadow border-primary " style="width:60%; margin: 2% auto;">
+    <div class="card-header bg-primary">Singup</div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary" >Sign up</button>
+      </form>
+    </div>
+  </div>
+<hr>
+Already an account? <a href="{% url 'index' %}"> sign in! </a>
+{% endblock %}

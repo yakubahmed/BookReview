@@ -1,0 +1,60 @@
+{% extends "orders/base.html" %}
+
+
+{% block body %}
+
+
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-12">
+        <h2><div class="alert alert-info my-2">Please complete your order</div> </h2>
+
+        </div>
+        <div class="col-6">
+            <table class="table table-bordered">
+                <tr class="bg-info">
+                    <thead>
+                        <th><h4 id="page-header">Cart Items</h4></th>
+                    </thead>
+                </tr>
+                <tr>
+                    <tbody>
+                        <td><ul id="checkOutCart" name="checkOutCart">
+                        </ul></td>
+                    </tbody>
+                </tr>
+               
+                    <tfoot>
+                        <tr>
+                            <td class="bg-info">
+                                <p>Order price: $<span id="checkOutPrice"></span></p>
+                            </td>
+                       </tr>
+                       <tr>
+                           <td>
+                            <form action="{% url 'pay' %}" method="post" onSubmit="alert('Thank you for your order, confirmation will be sent to you via mail');">
+                                {% csrf_token %}
+                                <input id="order_overview" type="text" name="order_overview" id="order_overview" value="1" required hidden><br> 
+                                <input id="order_price" type="text" name="order_price" id="order_price" value="1" required hidden >
+                                
+                                <input type="submit" value="Pay" class="btn btn-primary btn-block" onclick="clearCart()"/>
+                            </form>
+                           </td>
+                       </tr>
+                       <tr>
+                           <td class="bg-secondary">
+                                <a href="{% url 'index' %}" type="button" class="btn btn-secondary btn-block">Continue shopping / edit cart</a>
+                           </td>
+                       </tr>
+                    </tfoot>
+               
+            </table>
+
+        
+        </div>
+    </div>
+</div>
+
+{% endblock %} 

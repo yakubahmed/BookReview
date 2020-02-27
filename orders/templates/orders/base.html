@@ -1,0 +1,96 @@
+    {% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+
+    <title>Pizza Store</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+ 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="{% static 'orders/styles.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/custome.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}"/>
+
+    <script type="text/javascript" src="{% static 'orders/index.js' %}"></script>
+
+    </head>
+    <body>
+
+     
+        <nav class="navbar navbar-expand-md navbar-dark bg-success "  >
+            <div class="container">
+                <a href="{% url 'index' %}" class="navbar-brand">
+                    
+                    <strong> <span style="color:rgb(255, 255, 255)" >PIZZA STORE</span></strong>
+                </a>
+                
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse" >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+        
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+        
+                    <div class="navbar-nav ml-auto" >
+                    {% if user.is_authenticated %}
+                        <a href="" class="nav-item nav-link " ><h5>Welcome, {{ user.username }}</h5></a></li>
+                        <a href="{% url 'logout' %}" class="nav-item nav-link " > <h5>Logout</h5> </a></li>
+                     {% else %}
+                            <a href="{% url 'signup' %}" class="nav-item nav-link " ><h5> Register</h5></a>
+                            <a href="{% url 'index' %}" class="nav-item nav-link " ><h5>Login  </h5></a>
+                    {% endif %}
+                            
+               
+                    </div>
+    
+                </div>
+            </div>
+        </nav>
+        {% if user.is_authenticated %}
+        <div class="sidebar">
+            <h3>Shopping cart</h3>
+            <hr>
+            <div>
+
+                <ul id="shopping-cart-list" class="" > <!--Showing items in shopping cart-->
+                </ul>
+            </div>
+            <hr>
+            <div>Total price: $<span class="total-cart" id="shopping-cart-total">0</span></div> <!--Showing Total Price-->
+
+            <hr>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" id="placeOrder1" data-toggle="modal" data-target="#cart" disabled>Place order</button><small>      </small>
+            <button class="clear-cart btn btn-danger" onclick="clearCart()">Clear Cart</button>  
+
+        </div>
+        {% endif %}
+        </div>
+
+        <div class="container">
+        {% block body %}
+        
+
+
+        {% endblock %}
+       </div>
+
+
+    <footer  style="width:100%; margin-top: 5%;height:50px; background-color: rgb(17, 16, 16); " class="fixed-bottom py-2 px-2">
+        <div class="container">
+        <p class="text-light text-right" style="font-family: Consolas;">
+           
+             <strong>developed by  <span class="fa fa-heart" style="color:red"></span>  Yakub Ahmed 2020</strong>
+         </p>
+
+        </div>
+    </footer>
+    </body>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</html>
