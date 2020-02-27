@@ -8,15 +8,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Flak App</title>
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
+
     <link rel="shortcut icon" href="{{ url_for('static',filename='images/logo.png') }}" type="image/x-icon">
-    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    
+     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-    <script src="{{ url_for('static', filename='js/cust.js') }}"></script>
+
+	<script src="{{ url_for('static', filename='js/channels.js') }}"></script>
     <style>
       body{
                 background: #5bc0de;
@@ -39,9 +39,7 @@
     </style>
 </head>
 <body>
-        {% if alert %}
-            <script> alert('{{ alert }}') </script>
-        {% endif %}
+
         <!-- / Navigation -->
         <nav class="navbar navbar-expand-lg navbar-info bg-info" style="border-radius:0;">
             <div class="container">
@@ -147,10 +145,10 @@
         <div class="modal-header">
           <h4 class="modal-title">Login</h4>
         </div>
-          <form action="" method="post">
+          <form id="login_form" action="{{ url_for('flackchat') }}" method="post">
             <div class="modal-body">
                 <small>To start chatting enter your name here</small>
-              <input type="text" name="name" class="form-control" placeholder="your name" required>
+              <input  id="dname_field" type="text" name="displayname"  class="form-control" placeholder="your name" required>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -163,3 +161,5 @@
     </div>
   </div>
   
+
+
