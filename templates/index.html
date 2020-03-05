@@ -1,0 +1,165 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Flak App</title>
+
+    <link rel="shortcut icon" href="{{ url_for('static',filename='images/logo.png') }}" type="image/x-icon">
+     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+
+	<script src="{{ url_for('static', filename='js/channels.js') }}"></script>
+    <style>
+      body{
+                background: #5bc0de;
+                margin:0;
+                
+            }
+            .text-continer{
+                margin: 10% auto;
+                font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+                font-size: larger;
+                color:white;
+            }
+            .parterns-section{
+                background-color: rgba(110, 110, 134, 0.466);
+                width:100%;
+                padding: 3.7% 4%;
+                margin:0 auto;
+            }
+            
+    </style>
+</head>
+<body>
+
+        <!-- / Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-info bg-info" style="border-radius:0;">
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <a class="navbar-brand" href="{{ url_for('index') }}" >
+                      <img src="{{ url_for('static',filename='images/logo.png') }}" alt="" height='30'>
+                      <strong style="color:white;"> Flack Chat App </strong> 
+                  </a>
+                
+                  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                   
+                    </ul>
+                    <form class="form-inline my-2 my-lg-0">
+                      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                          <li class="nav-item ">
+                              <button type="button" class="nav-link btn btn-info" data-toggle="modal" data-target="#loginModel">Get started</button>                          
+                            </li>
+      
+                      </ul>
+                    </form>
+          
+          
+                      <!-- /.navbar-collapse -->
+                  </div>
+                  <!-- /.container -->
+            </div>
+    
+        </nav>
+
+        <div class="container-fluid">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="text-continer">
+                            <h3 class="text-center">
+                                <span style="color:darkblue">  <i><strong>Flack</strong> </span>is a collaboration hub, where the right people and 
+                                the right information come together, helping everyone get work done.</i>
+                            </h3>
+                        </div>
+                    </div>
+    
+                    </div>
+    
+            </div>
+        </div>
+            <div class="parterns-section">
+                <h4 class="text-light">Companies we colloperate:</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="{{ url_for('static', filename='images/iite.png') }}" height="100" width="auto" alt="" srcset="">
+                    </div>
+                    <div class="col-md-4">
+                        <img src="{{ url_for('static', filename='images/yooltech.png') }}" height="100" width="auto" alt="" srcset="">
+                    </div>
+                    <div class="col-md-4">
+                        <img src="{{ url_for('static', filename='images/mit.png') }}" height="100" width="auto" alt="" srcset="">
+                    </div>
+                </div>
+            </div>
+            
+    
+    
+    
+    <div class="footer" style="background-color:white; height:12.4vh;">
+        <p class="text-right py-3 px-3">Flack chat app &copy; 2020 by  <strong> <i>Yakub Ahmed</i> </strong> </p>
+    </div>
+    
+    
+    
+    
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </body>
+    </html>
+    
+
+</body>
+</html>
+
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+
+<script>
+
+    if (localStorage.getItem('last_channel')) {
+        // Redirect to last channel
+        let channel = localStorage.getItem('last_channel');    
+        window.location.replace('/channels/' + channel);   
+    }
+
+</script>
+
+
+<!-- Modal -->
+<div class="modal fade" id="loginModel" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Login</h4>
+        </div>
+          <form id="login_form" action="{{ url_for('flackchat') }}" method="post">
+            <div class="modal-body">
+                <small>To start chatting enter your name here</small>
+              <input  id="dname_field" type="text" name="displayname"  class="form-control" placeholder="your name" required>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-info" >Submit</button>
+              
+            </div>
+          </form>
+      </div>
+      
+    </div>
+  </div>
+  
+
+
