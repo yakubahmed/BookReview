@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} {% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/custome.css') }}">
+    <!-- Font Awesome link-->
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <!-- Favicn link -->
+    
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/fav.png') }}" type="image/x-icon">
+
+    <!-- Ck editor link -->
+    <script src="{{ url_for('static',filename='ckeditor/ckeditor.js') }}"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    
+
+    
+
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-info "  >
+        <div class="container">
+            <a href="{{ url_for('index') }}" class="navbar-brand">
+                
+                <strong> <span style="color:rgb(255, 255, 255)" >Coding News</span></strong>
+            </a>
+            
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse" >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+    
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+    
+                <div class="navbar-nav ml-auto" >
+                    {% if 'user_id' in session %}
+                        <a  class="nav-item nav-link active " ><h5> Welcome, {{ session['full_name'] }} </h5></a>
+                        <a href="{{ url_for('logout') }}" class="nav-item nav-link  " ><h5> Logout </h5></a>
+                    {% else %}
+                        <a href="" class="nav-item nav-link active " ><h5> Lastest news</h5></a>
+                        <a href=" {{ url_for('languages') }} " class="nav-item nav-link " ><h5> List of languages </h5></a>
+                        <a href="{{ url_for('login') }}" class="nav-item nav-link " ><h5> Admin </h5></a>
+                    {% endif %}
+                </div>
+
+            </div>
+            
+        </div>
+
+        
+    </nav>
+    
+{% block header %}
+
+{% endblock %}
+
+{% if "user_id" in session %}
+{% block sidebar %}
+<div class="sidebar">
+    <ul class="list-group" style="border-radius: 0;">
+        <li class="list-group-item active" style="border-radius: 0;">Side bar</li>
+        <li class="list-group-item "> <a href="{{ url_for('categories') }}">Post category </a> </li>
+        <li class="list-group-item "> <a href="{{ url_for('users') }}">Users </a> </li>
+        <li class="list-group-item">  <a href="{{ url_for('addpost') }}">Add new post </a> </li>
+        <li class="list-group-item">  <a href="{{ url_for('manage_post') }}">Manage post </a> </li>
+        <li class="list-group-item">  <a href="{{ url_for('addlangauge') }}">Add new language </a> </li>
+    </ul>
+
+
+</div>
+{% endblock %}
+{% endif %}
+
+    <div class="container">
+
+
+
+       {% block body %}{% endblock %}
+    </div>
+
+  
+{% block footer %}
+<div class="footer  " style="width:100%; padding:2%; background-color: darkslategray;color:whitesmoke">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h4 class="text-light py-2" style="border-bottom:2px solid brown; border-width:0.3rem;"> Top 5 news of the weak </h4>
+                <h6 class="">
+                    {% for p in top5p %}
+                     <a href="{{ url_for('post_view', pid=p.post_id) }}" class="link text-light">  {{p.post_title}} </a><br>
+                    {% endfor %}
+                </h6> 
+             </div>
+            <div class="col-md-4">
+                <h4 class="text-light py-2" style="border-bottom:2px solid brown; border-width:0.3rem;"> Address </h4>
+                <h4 class="text-light">Heliwaa,Mogadishu,Banadir, Somali</h4>
+            </div>
+            <div class="col-md-4">
+                <h4 class="text-light py-2" style="border-bottom:2px solid brown; border-width:0.3rem;"> Social media </h4>
+                
+                    <a href=""> <i class="fa fa-facebook" >  </i></a>
+                    <a href=""> <i class="fa fa-youtube" ></i>  </i></a>
+                    <a href=""> <i class="fa fa-gmail" > </i>  </i></a>
+                    <a href=""> <i class="fa fa-twitter" > </i>  </i></a>
+                    
+                    
+                    
+                    
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#lang').DataTable({
+                lengthMenu: [[3,5,7,-1],[3,5,7,"All"]],
+            });
+            $('#category').DataTable({
+                lengthMenu: [[2,5,7,-1],[2,5,7,"All"]],
+            });
+            $('#posts').DataTable({
+                lengthMenu: [[5,10,15,-1],[5,10,15,"All"]],
+            });
+        } );
+    </script>
+</body>
+</html>
+
+
+

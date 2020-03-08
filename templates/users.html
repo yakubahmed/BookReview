@@ -1,0 +1,99 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Post
+{% endblock %}
+
+{% block body %}
+
+<div class="my-4">
+
+    <div class="form-group">
+        <div class="col-md-6" style="width: 70%; min-width: 499px; margin:0 auto;">
+            {% with msg = get_flashed_messages() %}
+            {% if msg %}
+                <div class='alert alert-warning col-md-12' id="msg">
+                    <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+                    <span aria-hidden='true'>&times;</span>
+                    </button> {{msg}} 
+                </div>
+            {% endif %}
+            {% endwith %}
+
+    
+        </div>
+    </div>
+    <div class="card " style="width: 70%; min-width: 499px; margin:0 auto;">
+
+        <div class="alert alert-info" style="border-radius: 0;">
+            <strong>User Registration</strong>
+        </div>
+
+
+        <div class="card-body">
+
+            <form action="{{ url_for('newuser') }}" method="POST">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <div class="label"> Full name </div>
+                        <input type="text" name="fname"  class="form-control" placeholder="ex Yakub Ahmed" required autocomplete="off" autofocus value="{{ request.form.fname }}">
+                    </div>
+    
+                    <div class="form-group col-md-6">
+                        <div class="label"> Email Address </div>
+                        <input type="email" name="email"  class="form-control border-{{dangere}}" placeholder="ex yourname@domain.com" required autocomplete="off" value="{{ request.form.email }}">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <div class="label"> Password </div>
+                        <input type="password" name="password"  class="form-control border-{{dangerp}}" placeholder="password.." autocomplete="off">
+                    </div>
+    
+                    <div class="form-group col-md-6">
+                        <div class="label">Confirm Password </div>
+                        <input type="password" name="cpassword"  class="form-control border-{{dangerp}}" placeholder="Confirm your password">
+                    </div>
+                    <div class="form-group col-md-12 ">
+                        <input type="submit" value="submit" class="btn btn-info btn-block">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="">
+    <div class="card border-alert" style="width: 70%; min-width: 499px; margin:0 auto;">
+        <div class="alert alert-info" style="border-radius: 0; margin:0;">
+            <strong>User Registration</strong>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped ">
+                <thead>
+                    <tr>
+                        <th> User ID </th>
+                        <th> Full name </th>
+                        <th> Email Address </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{user.user_id}}</td>
+                        <td>{{user.full_name}}</td>
+                        <td>{{user.email}}</td>
+                        <th> <a href="{{ url_for('del_user', id=user.user_id) }}" class="btn-sm btn-danger">Delete</a> </th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
