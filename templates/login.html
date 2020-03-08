@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Post
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="card " style="width: 60%; min-width: 499px; margin:2% auto;">
+        <div class="alert alert-info" style="border-radius: 0;">
+            <strong>Login</strong>
+        </div>
+
+        <div class="card-body">
+
+            {% if msg %}
+                <p class="alert alert-warning">
+                    {{msg}}
+                </p>
+            {% endif %}
+            <form action="{{ url_for('login') }}" method="post">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1" ><i class="fa fa-user-circle"></i></span>
+                    </div>
+                    <input type="email" name="email" type="email" class="form-control" aria-describedby="basic-addon1" placeholder="Email Address" autocomplete="off" autofocus value="{{ request.form.email }}">
+                </div>
+    
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon2"><i class="fa fa-lock"></i></span>
+                    </div>
+                    <input type="password" name="password" class="form-control" aria-describedby="basic-addon2" placeholder="Password" >
+                </div>
+    
+                <div class="form-group ">
+                    <input type="submit" value="login" class="btn btn-info">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}

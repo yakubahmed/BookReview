@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Category
+{% endblock %}
+
+{% block body %}
+
+<div class="my-4">
+
+    <div class="form-group">
+        <div class="col-md-6" style="width: 70%; min-width: 499px; margin:0 auto;">
+            {% if msg %}
+            <div class='alert alert-warning col-md-12' id="msg">
+                <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+                <span aria-hidden='true'>&times;</span>
+                </button> {{msg}} 
+            </div>
+        
+            {% endif %}
+    
+        </div>
+    </div>
+    <div class="card " style="width: 70%; min-width: 499px; margin:0 auto;">
+
+        <div class="alert alert-info" style="border-radius: 0;">
+            <strong>Update Category</strong>
+        </div>
+
+        <div class="card-body">
+
+            <form action="{{  url_for('update_category',id=id) }}" method="POST">
+                <div class="row">
+                    <div class="form-group col-md-8">
+                        <input type="text" name="cname"  class="form-control border-{{style}}" placeholder="category" required autocomplete="off" autofocus value="{{ c.category_name }}">
+                    </div>
+    
+                    <div class="form-group col-md-4 ">
+                        <input type="submit" value="Update" class="btn btn-primary btn-block">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}

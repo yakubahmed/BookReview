@@ -1,0 +1,78 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Category
+{% endblock %}
+
+{% block body %}
+
+<div class="my-4">
+
+    <div class="form-group">
+        <div class="col-md-6" style="width: 70%; min-width: 499px; margin:0 auto;">
+            {% with msg = get_flashed_messages() %}
+            {% if msg %}
+                <div class='alert alert-warning col-md-12' id="msg">
+                    <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+                    <span aria-hidden='true'>&times;</span>
+                    </button> {{msg}} 
+                </div>
+            {% endif %}
+            {% endwith %}
+    
+        </div>
+    </div>
+    <div class="card " style="width: 70%; min-width: 499px; margin:0 auto;">
+
+        <div class="alert alert-info" style="border-radius: 0;">
+            <strong>Update Post</strong>
+        </div>
+
+        <div class="card-body">
+
+            <form action="{{ url_for('update_post', id=id) }}" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <div class="label"> Post Category </div>
+                        <select name="cat_id" class="form-control">
+                            <option value="">Select Post Category</option>
+                            {% for cat in categ %}
+                            <option value="{{cat.cat_id}}">{{cat.category_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <div class="label"> Post title </div>
+                        <input type="text" name="ptitle"  class="form-control" placeholder="Title" required autocomplete="off" autofocus value="{{ p.post_title }}">
+                    </div>
+    
+                    <div class="form-group col-md-12">
+                        <div class="label"> Post Image </div>
+                        <input type="file" name="pimage"  class="form-control " value="{{ p.pimage }}" required>
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <div class="label"> Post Content </div>
+                        <textarea name="pcontent" id="pcontent" class="form-control" required>{{p.post_content}}</textarea>
+
+                    </div>
+    
+
+                    <div class="form-group col-md-12 ">
+                        <input type="submit" value="Upate" class="btn btn-primary btn-block">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    CKEDITOR.replace('pcontent');
+</script>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}

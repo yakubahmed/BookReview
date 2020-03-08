@@ -1,187 +1,288 @@
 import os
 
-from flask import Flask, render_template, request, jsonify, Response
-import random, json, time, datetime
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask import Flask, session, render_template, request, redirect, url_for, flash
+from flask_session import Session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+import requests
+from helpers import login_required
+
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = 'static/img'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-socketio = SocketIO(app)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
 
+# Set up database
+engine = create_engine('postgresql://postgres:Me.Yakub@localhost:5432/coding_news')
+db = scoped_session(sessionmaker(bind=engine))
 
-# Arrays of channel names and registered users
-channel_list = ["General"]
-user_list = []
+app = Flask(__name__)
 
-# Dictionary of users & messages
-user_dm_list = {}
 
-# dictionary to track rooms, or private channels
-# Rooms = {"dn:" displayname, "room": room}
-Rooms = {} 
-
-# channel_messages = {
-#    channel: chn,
-#    messages: [{channel, displayname, timestamp, msg_txt}]
-
-now = datetime.datetime.now()
-
-startup_message = {
-    "channel": "General",
-    "user_from": "Flack Bot",
-    "user_to": "",
-    "timestamp": now.strftime("%a %b %d %I:%M:%S %Y"), 
-    "msg_txt": "Welcome to Flack Messaging"}
-
-channel_messages = {
-    "General": {
-        'messages': [startup_message]
-}}
- 
-@app.route("/")
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+@app.route('/', methods=['POST','GET'])
 def index():
-    return render_template("index.html")
+    post = db.execute('select * from tbl_post_view by(post_id)  order by(post_id) DESC').fetchall()
+    top_5_post = db.execute("select * from tbl_post_view order by(post_id) DESC LIMIT 5").fetchall()
+    if request.method == "POST":
+        sval = request.form.get('searchval')
+        post = db.execute("select * from tbl_post_view where post_title like :ptitle or\
+             post_content like :pcontent or createdby like :user or category_name like :cname "\
+            ,{"ptitle": '%' + sval +'%', "ptitle": '%' + sval + '%', "pcontent":'%' + sval + '%' \
+             ,"user": '%' + sval + '%', "cname": '%' + sval + '%'}).fetchall()
+    return render_template('index.html',posts=post, top5p=top_5_post)
+    
 
-@app.route("/logout", methods=["POST"])
-def logout():
-    return render_template("index.html")
+    return render_template('index.html',posts=post, top5p=top_5_post)
 
-@app.route("/flackchat", methods=["POST", "GET"])
-def flackchat():
-    user = request.form.get("displayname")
-    return render_template("channels.html", name=user)
+@app.route('/view/<int:pid>')
+def post_view(pid):
+    post = db.execute('select * from tbl_post_view where post_id=:pid', {"pid":pid}).fetchall()
 
-@app.route("/register")
-def register():
-    return 0
+    rel_post = db.execute(' select * from tbl_post where  cat_id in (select cat_id from tbl_post_category) LIMIT 5', {"pid":pid}).fetchall()
+    return render_template('single-page.html',posts=post, rel_posts=rel_post)
 
-@socketio.on("submit channel")
-def new_channel(data):
-    channel = data["channel"]
-    channel_list.append(channel)
-    emit("announce channel", {"channel": channel}, broadcast=True)
-    return 1
+@app.route('/admin/categories', methods=['POST','GET'])
+@login_required
+def categories():
+    categories = db.execute('select * from tbl_post_category').fetchall()
 
-@app.route("/query_channels", methods=["POST"])
-def query_channels():
-    return jsonify({"success": True, "channel_list": channel_list})
+    if request.method == "POST":
+        category_name = request.form.get('cname')
 
-@app.route("/query_users", methods=["POST"])
-def query_users():
-    return jsonify({"success": True, "active_users": user_list})
+        category = db.execute('select * from tbl_post_category where category_name=:cname',{"cname":category_name}).fetchone()
+        if category is not None:
+            return render_template('categories.html', msg="SORRY!, that category is found please try another one", style="danger")
 
-@app.route("/query_messages", methods=["POST"])
-def fetch_messages():
-    channel = request.form.get("channel")
-    dn = request.form.get("displayname")
-    msg_status = request.form.get("msg_type")
-
-    if (msg_status == "PUBLIC"):
-        my_msgs = channel_messages.get(channel)
-    else: 
-        my_msgs = user_dm_list.get(channel)
-
-    if (my_msgs):
-        msglist = my_msgs['messages']
-        if ((msg_status == "PUBLIC") or (channel == dn)):
-            return jsonify({"success": True, "channel_msgs": msglist})
+        if db.execute('INSERT INTO tbl_post_category (category_name) VALUES (:cname)', {"cname":category_name}):
+            db.commit()
+            flash("Category created successfully")
+            return redirect(url_for('categories'))
         else:
-            all_msgs = []
-            for msg in msglist:
-                # return only messages matching dn
-                if ((msg["user_from"] == dn) or (msg['user_to'] == dn)):
-                    all_msgs.append(msg)
-            return jsonify({"success": True, "channel_msgs": all_msgs})
-    else:
-        return jsonify({"success": False, "error_msg": "No messages"})
+            return render_template('categories.html', msg="Something is wrong please try again")
+    return render_template('categories.html', style="", c=categories)
 
-@socketio.on("submit message")
-def new_message(data):
-    channel = data["channel"]
-    user_from = data["user_from"]
-    msg_txt = data["msg_txt"]
-    timestamp = time.asctime( time.localtime( time.time() ) )
+@app.route('/admin/category/delete/<int:id>')
+@login_required
+def del_category(id):
+    if db.execute('delete from tbl_post_category where cat_id=:uid ', {'uid':id}):
+        db.commit()
+        flash("category deleted succesfully")
+        return redirect(url_for('categories'))
+
+@app.route('/admin/post/delete/<int:pid>')
+@login_required
+def del_post(pid):
+    if db.execute('delete from tbl_post where post_id=:pid ', {'pid':pid}):
+        db.commit()
+        flash("Post deleted succesfully")
+        return redirect(url_for('manage_post'))
+
+@app.route('/admin/language/delete/<int:id>')
+@login_required
+def del_lang(id):
+    if db.execute('delete from tbl_langauges where lang_id=:uid ', {'uid':id}):
+        db.commit()
+        flash('Language deleted successfully')
+        return redirect(url_for('addlangauge'))
+
+@app.route('/admin/category/update/<int:id>',methods=['POST','GET'])
+@login_required
+def update_category(id):
+
+    c = db.execute('select * from tbl_post_category where cat_id=:cid',{"cid":id}).fetchone()
+    
+
+    cname = request.form.get('cname')
+    if request.method == "POST":
+        if db.execute('Update tbl_post_category SET category_name=:cname where cat_id=:uid ', {'uid':id,"cname":cname}):
+            db.commit()
+            flash("category updated successfully")
+            return redirect(url_for('categories'))
+    return render_template('edit-category.html', c=c, id=id)
+
+@app.route('/admin/language/update/<int:id>',methods=['POST','GET'])
+@login_required
+def update_lang(id):
+
+    langs = db.execute('select * from tbl_langauges where lang_id=:lid',{"lid":id}).fetchone()
+    
+    position = request.form.get('position')
+    rate = request.form.get('rating')
+    lang = request.form.get('lang')
+
+    if request.method == 'POST':
+        if db.execute("UPDATE tbl_langauges SET position=:position, lang_name=:lname, rating=:rat where lang_id=:id",\
+                 {"position":position, "lname":lang,"rat":rate, 'id':id}):
+            db.commit()
+            flash("Upated successfully")
+            return redirect(url_for('addlangauge'))
+        return render_template('edit-language.html',msg="Failed to update")
+
+    return render_template('edit-language.html', lan=langs, id=id)
+
+@app.route('/admin/post/update/<int:id>',methods=['POST','GET'])
+def update_post(id):
+
+    cid = request.form.get("cat_id")
+    ptitle = request.form.get("ptitle")
+
+    pcontent = request.form.get('pcontent')
+    
+    category = db.execute('select * from tbl_post_category').fetchall()
+    post = db.execute("select * from tbl_post where post_id =:pid",{"pid":id}).fetchone()
+    if request.method == "POST":
+        pimage = request.files['pimage']
+        
+        if db.execute("UPDATE tbl_post SET post_title =:ptitle, cat_id =:cid, post_content =:pcontent, \
+            post_image =:pimage where post_id=:pid",{"ptitle":ptitle,"cid":cid,"pcontent":pcontent, "pimage":pimage.filename, "pid":id}):
+            db.commit()
+            file = request.files['pimage']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                flash('Post Updated successfully!')
+                return redirect(url_for('manage_post'))
+            return render_template('edit-post.html',msg="Only image with jpg, jpeg, png extensions are allowed")
+
+    return render_template('edit-post.html',   p=post, id=id, categ=category)
+
+@app.route('/languages')
+def languages():
+    lang = db.execute('select * from tbl_langauges').fetchall()
+    return render_template('languages.html', languages=lang)
+
+@app.route('/admin/login', methods=['POST','GET'])
+def login():
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    if request.method == "POST":
+        user = db.execute('select * from tbl_user where email=:email and password =:password',{'email': email, "password":password}).fetchone()
+        if not user:
+            return render_template('login.html', msg="Invalid username or password")
+        else:
+            session['user_id'] = user['user_id']
+            session['full_name'] = user['full_name']
+            return redirect(url_for('home'))
+    return render_template('login.html')
 
 
-    msg = {"channel": channel, 
-           "user_from": user_from, 
-           "user_to": channel, 
-           "timestamp": timestamp, 
-           "msg_txt": msg_txt}
-    if channel in channel_messages:
-        # Public Channel with messages
-        msgs = channel_messages[channel]
-        msg["msg_type"] = "PUBLIC"
-        if len(msgs['messages']) >= 100:
-            del msgs['messages'][0]
-        msgs['messages'].append(msg)
-        emit("announce message", msg, broadcast=True)
-        return jsonify ({"success": True, "msg_type": "PUBLIC"})
-    else:
-        if (not (channel in user_dm_list)):
-            # public channel, first message
-            msg["msg_type"] = "PUBLIC"
-            channel_messages[channel] = {"channel": channel, "messages": [msg]}
-            emit("announce message", msg, broadcast=True)
-            return jsonify ({"success": True, "msg_type": "PUBLIC"})
-        else: 
-            # private message
-            msg["msg_type"] = "PRIVATE"
-            if (channel in user_dm_list):
-                for user in [user_from, channel]:
-                    msgs = user_dm_list[user]
-                    if len(msgs['messages']) >= 100:
-                        del msgs['messages'][0]
-                    msgs['messages'].append(msg)
-            else:
-                user_dm_list[user] = {"channel": channel, "messages": [msg]}
-            print (f"NM: emit msg to ", user_from)
-            msg["channel"] = channel
-            emit("announce message", msg, room=Rooms[user_from])
-            print (f"NM: emit msg to ", channel)
-            msg["channel"] = user_from
-            emit("announce message", msg, room=Rooms[channel])
-            return jsonify ({"success": True, "msg_type": "PRIVATE"})
+@app.route('/admin/')
+@login_required
+def home():
+    return render_template('admin-home.html')
 
-@socketio.on('join')
-def on_join(data):
-    username = data['displayname']
-    if (username == ""):
-        return jsonify ({"success": False, "error_msg": "No text entered"})
+@app.route('/admin/user/new', methods=['POST','GET'])
+def newuser():
+    fullname = request.form.get('fname')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    cpassword  = request.form.get('cpassword')
+    mail = db.execute("select * from tbl_user where email =:email", {"email": email}).fetchone()
+    if not mail is None :
+        return render_template('users.html', dangere="danger", msg="The email that you entered is allready taken please try another one")
+    if password !=  cpassword :
+        return render_template('users.html', msg="Both password does't match", dangerp="danger", dangere="success")
+    if db.execute("INSERT INTO tbl_user (full_name, email, password) Values(:fname,:mail,:pwd)", {"fname":fullname, "mail":email, "pwd":password}):
+        db.commit()
+        flash("User created successfully")
+        return redirect(url_for('users'))
+    else :
+        return render_template('users.html', msg="Something is wrong please try again")
 
-    if (not (username in user_list)):
-        user_list.append(username)
-        user_dm_list[username] = ({"channel": username, "messages": []})
-        emit("new user", {"username": username}, broadcast= True)
-    else:
-        emit("user logged in", {"username": username}, broadcast=True)
+        
 
-    room = data['room']
-    join_room(room)
-    Rooms[username] = room
-    print (f"username ", username, "has room ", Rooms[username])
-    return jsonify ({"success": True})
+    return render_template('users.html')
 
-@socketio.on('logout user')
-def on_leave(data):
-    username = data['displayname']
-    print (f"username ", username, " logging out")
-    room = Rooms[username]
-    leave_room(room)
-    del Rooms[username]
-    emit("user logged out", {"username": username}, broadcast=True)
+@app.route('/admin/users')
+@login_required
+def users():
+    users = db.execute('select * from tbl_user').fetchall()
 
-@socketio.on('leave')
-def on_leave(data):
-    username = data['displayname']
-    print (f"username ", username, " logging out")
-    room = Rooms[username]
-    leave_room(room)
-    del Rooms[username]
-    emit("user logged out", {"username": username}, broadcast=True)
+    return render_template('users.html', users=users)
+
+
+@app.route('/admin/users/delete/<int:id>')
+@login_required
+def del_user(id):
+    if id == session['user_id']:
+        return render_template('error.html' , msg = "you can't delete your self")
+    if db.execute('delete from tbl_user where user_id=:uid ', {'uid':id}):
+        db.commit()
+        return redirect(url_for('users'))
+
+@app.route('/admin/add-post', methods=['POST', 'GET'])
+@login_required
+def addpost():
+    post_cat = db.execute("SELECT * from tbl_post_category").fetchall()
+    if request.method == "POST":
+        cat_id = request.form.get('cat_id')
+        post_content = request.form.get('pcontent')
+
+        post_title = request.form.get('ptitle')
+        fname =  session['full_name']
+        pimage = request.files['pimage']
+        image = request.form.get('pimage')
+        if db.execute("INSERT INTO tbl_post (post_title,post_image,post_content,cat_id,createdby) VALUES (:ptitle,:pimage,:pcontent,:cid,:user)",{"ptitle":post_title, "pimage":pimage.filename, "pcontent":post_content, "cid":cat_id,"user":fname}):
+            db.commit()
+            file = request.files['pimage']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                flash('Post added successfully!')
+                return redirect(url_for('addpost'))
+            return render_template('add-post.html',msg="The file format that you have enter is not allowed,only png,jpg,jpeg  are allowed")
+
+            return render_template('add-post.html',msg="Successfully added")
+        return render_template('add-post.html',msg="Failed added")
+        
+    return render_template('add-post.html',postcat=post_cat)
+
+@app.route('/admin/add-language', methods=['POST','GET'])
+@login_required
+def addlangauge():
+    position = request.form.get('position')
+    lang = request.form.get('lang')
+    rate = request.form.get('rating')
+
+    language = db.execute("select * from tbl_langauges order by(position) ASC ").fetchall()
+
+    if request.method == "POST":
+        if db.execute('INSERT INTO tbl_langauges (Position,lang_name, rating ) VALUES (:position,:lang,:rating) ', {"position":position,"lang":lang,"rating":rate}):
+            db.commit()
+            flash("langauge added successfully")
+            return redirect(url_for('addlangauge')) 
+        return render_template('add-language.html',msg="Something went is wrong try again")
+    return render_template('add-language.html', language=language)
+
+@app.route('/admin/post/list')
+@login_required
+def manage_post():
+    post = db.execute('select * from tbl_post_view').fetchall()
+    return render_template('manage-post.html',posts=post)
+
+@app.route("/logout")
+@login_required
+def logout():
+    session.pop("user_id",None)
+    session.pop("full_name",None)
+    return redirect(url_for('login'))
+
+
 
 
 if __name__ == "__main__":
-    app.SECRET_KEY = "mysecret"
-    app.run(debug=True)
+    app.secret_key = "coding_newss"
+    app.run(debug=True, port=8000)

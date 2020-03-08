@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Post
+{% endblock %}
+
+{% block body %}
+
+<div class="my-4">
+
+    <div class="form-group">
+        <div class="col-md-6" style="width: 70%; min-width: 499px; margin:0 auto;">
+            {% with msg = get_flashed_messages() %}
+            {% if msg %}
+                <div class='alert alert-warning col-md-12' id="msg">
+                    <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+                    <span aria-hidden='true'>&times;</span>
+                    </button> {{msg}} 
+                </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+<div class="col-md-12">
+    <div class="card border-alert" style="width: 70%; min-width: 499px; margin:0 auto;">
+        <div class="alert alert-info" style="border-radius: 0; margin:0;">
+            <strong>Posts</strong>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped " id="posts">
+                <thead>
+                    <tr>
+                        <th>Post ID</th>
+                        <th>Post Category</th>
+                        <th>Post Title </th>
+                        <th>Author </th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                    <tr>
+                        <td>{{post.post_id}}</td>
+                        <td>{{post.category_name}}</td>
+                        <td>{{post.post_title}}</td>
+                        <td>{{post.createdby}}</td>
+                        <th>
+                            <a href="{{ url_for('update_post', id=post.post_id) }}" class="btn-sm btn-info"> <span class="fa fa-edit"></span> </a> 
+                            <a href="{{ url_for('del_post', pid=post.post_id) }}" class="btn-sm btn-danger"><span class="fa fa-trash"></span></a> 
+                        </th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
