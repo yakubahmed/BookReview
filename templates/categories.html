@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Category
+{% endblock %}
+
+{% block body %}
+
+<div class="my-4">
+
+    <div class="form-group">
+        <div class="col-md-6" style="width: 70%; min-width: 499px; margin:0 auto;">
+            {% with msg = get_flashed_messages() %}
+            {% if msg %}
+                <div class='alert alert-warning col-md-12' id="msg">
+                    <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+                    <span aria-hidden='true'>&times;</span>
+                    </button> {{msg}} 
+                </div>
+            {% endif %}
+            {% endwith %}
+
+    
+        </div>
+    </div>
+    <div class="card " style="width: 70%; min-width: 499px; margin:0 auto;">
+
+        <div class="alert alert-info" style="border-radius: 0;">
+            <strong>Category Registration</strong>
+        </div>
+
+
+        <div class="card-body">
+
+            <form action="{{ url_for('categories') }}" method="POST">
+                <div class="row">
+                    <div class="form-group col-md-8">
+                        <input type="text" name="cname"  class="form-control border-{{style}}" placeholder="category" required autocomplete="off" autofocus value="{{ request.form.cname }}">
+                    </div>
+    
+                    <div class="form-group col-md-4 ">
+                        <button type="submit" onclick="del();" class="btn btn-info btn-block" >Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="">
+    <div class="card border-alert" style="width: 70%; min-width: 499px; margin:0 auto;">
+        <div class="alert alert-info" style="border-radius: 0; margin:0;">
+            <strong>Category list</strong>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped " id="category">
+                <thead>
+                    <tr>
+                        <th> Category ID </th>
+                        <th> Category name </th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cate in c %}
+                    <tr>
+                        <td>{{cate.cat_id}}</td>
+                        <td>{{cate.category_name}}</td>
+                        <th> 
+                            <a href="{{ url_for('update_category', id=cate.cat_id) }}" class="btn-sm btn-info">Update</a>
+                            <a href="{{ url_for('del_category', id=cate.cat_id) }}" onclick="del();" class="btn-sm btn-danger">Delete</a>
+                         </th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
+
+<script>
+$(document).ready(function() {
+    $('#category').DataTable();
+} );
+</script>

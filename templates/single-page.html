@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+
+{% for post in posts %}
+{{ post.post_title }} 
+{% endfor %}
+{% endblock %}
+
+{% block sidebar %}
+
+{% endblock %}
+
+{% block body %}
+
+
+<div class="container">
+    <div class="row">
+        
+        <div class="col-md-8 my-5">
+            {% for post in posts %}
+                <h3>
+                   <strong> {{ post.post_title }} </strong>
+                </h3>
+                <hr>
+                <h5 class="text-right"> posted by : <small> {{post.createdby}} </small> </h5>
+            <img src="../static/img/{{post.post_image}}"  alt="" height="300">
+           
+                {{ post.post_content|safe }}
+           
+ 
+            {% endfor %}
+        </div>
+        <div class="col-md-4">
+
+            <div class="card my-4">
+                <div class="card-body">
+                    <h2> <strong>Related posts</strong> </h3>
+                    <hr>
+                    <h4>
+                        {% for rel_post in rel_posts %}
+                         <a href="{{ url_for('post_view', pid=rel_post.post_id) }}">{{ rel_post.post_title }}</a> 
+                        <hr>
+                        {% endfor %}
+
+                        
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block  footer%}
+
+{% endblock %}

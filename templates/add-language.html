@@ -1,0 +1,100 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Add new Langugae
+{% endblock %}
+
+{% block body %}
+
+<div class="my-4">
+
+    <div class="form-group">
+        <div class="col-md-6" style="width: 70%; min-width: 499px; margin:0 auto;">
+            {% with msg = get_flashed_messages() %}
+            {% if msg %}
+                <div class='alert alert-warning col-md-12' id="msg">
+                    <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+                    <span aria-hidden='true'>&times;</span>
+                    </button> {{msg}} 
+                </div>
+            {% endif %}
+            {% endwith %}
+
+    
+        </div>
+    </div>
+    <div class="card " style="width: 70%; min-width: 499px; margin:0 auto;">
+
+        <div class="alert alert-info" style="border-radius: 0;">
+            <strong>Programming language Registration</strong>
+        </div>
+
+
+        <div class="card-body">
+
+            <form action="{{ url_for('addlangauge') }}" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <div class="label"> Position  </div>
+                        <input type="number" name="position" class="form-control" placeholder="Position">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <div class="label"> Language </div>
+                        <input type="text" name="lang"  class="form-control" placeholder="Language" required autocomplete="off" autofocus value="{{ request.form.ptitle }}">
+                    </div>
+    
+                    <div class="form-group col-md-12">
+                        <div class="label"> Rating </div>
+                        <input type="text" name="rating"  class="form-control " placeholder="Rate " required>
+                    </div>    
+
+                    <div class="form-group col-md-12 ">
+                        <input type="submit" value="submit" class="btn btn-info btn-block">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="">
+    <div class="card border-alert" style="width: 70%; min-width: 499px; margin:0 auto;">
+        <div class="alert alert-info" style="border-radius: 0; margin:0;">
+            <strong>Category list</strong>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped " id="category">
+                <thead>
+                    <tr>
+
+                        <th>Position </th>
+                        <th>Language</th>
+                        <th>Rate</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lan in language %}
+                    <tr>
+                        <td>{{ lan.position }}</td>
+                        <td>{{ lan.lang_name }}</td>
+                        <td>{{ lan.rating }}</td>
+                        <th> 
+                            <a href="{{ url_for('update_lang', id=lan.lang_id) }}" class="btn-sm btn-info">Update</a>
+                            <a href="{{ url_for('del_lang', id=lan.lang_id) }}"  class="btn-sm btn-danger">Delete</a>
+                         </th>
+                    </tr>
+                    {% endfor %}
+        
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}

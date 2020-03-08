@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Category
+{% endblock %}
+
+{% block body %}
+
+<div class="my-4">
+
+    <div class="form-group">
+        <div class="col-md-6" style="width: 70%; min-width: 499px; margin:0 auto;">
+            {% if msg %}
+            <div class='alert alert-warning col-md-12' id="msg">
+                <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+                <span aria-hidden='true'>&times;</span>
+                </button> {{msg}} 
+            </div>
+        
+            {% endif %}
+    
+        </div>
+    </div>
+    <div class="card " style="width: 70%; min-width: 499px; margin:0 auto;">
+
+        <div class="alert alert-info" style="border-radius: 0;">
+            <strong>Update Language</strong>
+        </div>
+
+        <div class="card-body">
+
+            <form action="{{  url_for('update_lang',id=id) }}" method="POST">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <div class="label"> Position  </div>
+                        <input type="number" name="position" class="form-control" placeholder="Position" value="{{ lan.position }}">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <div class="label"> Language </div>
+                        <input type="text" name="lang"  class="form-control" placeholder="Language" required autocomplete="off" autofocus value="{{ lan.lang_name }}">
+                    </div>
+    
+                    <div class="form-group col-md-12">
+                        <div class="label"> Rating </div>
+                        <input type="text" name="rating"  class="form-control " placeholder="Rate " required value="{{ lan.rating }}">
+                    </div>    
+
+                    <div class="form-group col-md-12 ">
+                        <input type="submit" value="submit" class="btn btn-info btn-block">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
