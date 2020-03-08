@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+
+{% block title %} 
+    Home
+{% endblock %}
+
+
+{% block header %}
+
+{% endblock %}
+
+{% block sidebar %}
+{% endblock  %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="searchbar" style="width:100%; padding: 1%; background-color:cadetblue;">
+            <form action="{{ url_for('index') }}" method="post">
+                <input type="text" name="searchval"  class="form-control" style="border-radius: 0;" placeholder="Search posts">
+            </form>
+        </div>
+        
+    </div>
+   
+    {% for post in posts %}
+    <div class="col-md-4">
+        <div class="card my-4 mx-4 shadow" style="border-radius: 15px;" >
+            <div class="card-body">
+                <h5> <a href="{{ url_for('post_view', pid=post.post_id) }}">{{ post.post_title }}</a> </h5>
+            </div>
+            <img src="../static/img/{{post.post_image}}"  class="px-2 py-2" height="200" alt="" style="border-bottom-right-radius: 20px;">
+
+        </div>
+    </div>
+    {% endfor %}
+
+    </div>
+</div>
+{% endblock %}

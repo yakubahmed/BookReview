@@ -1,0 +1,11 @@
+
+.sidebar {
+    float: left;
+    width: 20%;
+    height: 89vh;
+    overflow-y: scroll;
+    margin:0;
+    background-color:aliceblue;
+    position: absolute;
+
+    }
